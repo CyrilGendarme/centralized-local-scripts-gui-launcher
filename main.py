@@ -1,8 +1,10 @@
 """
 Main application - GUI for launching local scripts.
 """
+import subprocess
 import threading
 import tkinter as tk
+from datetime import datetime
 from pathlib import Path
 from tkinter import messagebox, ttk
 from typing import Callable, Dict, Optional
@@ -26,6 +28,7 @@ class ScriptLauncherApp:
         self.root = root
         self.runner = ScriptRunner()
         self.last_status = {}
+        self.logs_widget = None
         
         # Load configuration
         try:
@@ -68,8 +71,15 @@ class ScriptLauncherApp:
             fill="x", padx=0, pady=10
         )
 
-        # Scripts container (scrollable)
-        self._build_scripts_area(main_frame)
+        # Content area: scripts on left, logs on right
+        content_frame = ttk.Frame(main_frame)
+        content_frame.pack(fill="both", expand=True, padx=0, pady=0)
+
+        # Left side: Scripts area (scrollable)
+        self._build_scripts_area(content_frame)
+
+        # Right side: Logs area
+        self._build_logs_area(content_frame)
 
         # Status bar
         self._build_status_bar(main_frame)
@@ -94,18 +104,19 @@ class ScriptLauncherApp:
         desc_label.pack(anchor="w")
 
     def _build_scripts_area(self, parent: ttk.Frame):
-        """Build the scrollable scripts area."""
-        # Canvas with scrollbar for scrolling
-        canvas_frame = ttk.Frame(parent)
-        canvas_frame.pack(fill="both", expand=True, padx=20, pady=10)
+        """Build the scrollable scripts area on the left."""
+        # Container for scripts
+        scripts_container = ttk.Frame(parent)
+        scripts_container.pack(side="left", fill="both", expand=True, padx=20, pady=10)
 
+        # Canvas with scrollbar for scrolling
         canvas = tk.Canvas(
-            canvas_frame,
+            scripts_container,
             bg=theme.BG,
             highlightthickness=0,
             relief="flat"
         )
-        scrollbar = ttk.Scrollbar(canvas_frame, orient="vertical", command=canvas.yview)
+        scrollbar = ttk.Scrollbar(scripts_container, orient="vertical", command=canvas.yview)
         scrollable_frame = ttk.Frame(canvas)
 
         scrollable_frame.bind(
@@ -126,6 +137,51 @@ class ScriptLauncherApp:
         scrollbar.pack(side="right", fill="y")
 
         self.scripts_frame = scrollable_frame
+
+    def _build_logs_area(self, parent: ttk.Frame):
+        """Build the logs/output textarea on the right."""
+        # Container for logs
+        logs_container = ttk.Frame(parent)
+        logs_container.pack(side="right", fill="both", expand=True, padx=(0, 20), pady=10)
+
+        # Title
+        logs_title = ttk.Label(
+            logs_container,
+            text="Execution Logs",
+            style="Accent.TLabel"
+        )
+        logs_title.pack(anchor="w", pady=(0, 5))
+
+        # Logs textarea with scrollbar
+        logs_frame = ttk.Frame(logs_container)
+        logs_frame.pack(fill="both", expand=True)
+
+        self.logs_widget = tk.Text(
+            logs_frame,
+            bg=theme.BG_INPUT,
+            fg=theme.FG,
+            font=theme.FONT_MONO,
+            relief="flat",
+            borderwidth=1,
+            wrap="word"
+        )
+        logs_scrollbar = ttk.Scrollbar(
+            logs_frame,
+            orient="vertical",
+            command=self.logs_widget.yview
+        )
+
+        self.logs_widget.config(yscrollcommand=logs_scrollbar.set)
+        self.logs_widget.pack(side="left", fill="both", expand=True)
+        logs_scrollbar.pack(side="right", fill="y")
+
+        # Clear button
+        clear_btn = ttk.Button(
+            logs_container,
+            text="Clear Logs",
+            command=self._clear_logs
+        )
+        clear_btn.pack(pady=(5, 0))
 
     def _build_status_bar(self, parent: ttk.Frame):
         """Build the status bar."""
@@ -250,24 +306,35 @@ class ScriptLauncherApp:
     def _on_script_launch(self, link_name: str, script_path: Path):
         """Handle script launch button click."""
         self._update_status(f"Launching: {link_name}...")
+        self._append_log(f"\n{'='*60}")
+        self._append_log(f"[{self._get_timestamp()}] Starting: {link_name}")
+        self._append_log(f"Script: {script_path}")
+        self._append_log(f"{'='*60}\n")
 
         # Run in a thread to keep UI responsive
         def run_script():
             success, message = self.runner.run(script_path)
             self.last_status[link_name] = (success, message)
             
+            # Log the result
+            status_icon = "✓" if success else "✗"
+            status_color = "green" if success else "red"
+            
             # Update status in main thread
             self.root.after(
                 0,
-                lambda: self._on_script_complete(link_name, success, message)
+                lambda: self._on_script_complete(link_name, success, message, status_icon)
             )
 
         thread = threading.Thread(target=run_script, daemon=True)
         thread.start()
 
-    def _on_script_complete(self, link_name: str, success: bool, message: str):
+    def _on_script_complete(self, link_name: str, success: bool, message: str, status_icon: str):
         """Handle script completion."""
         self._update_status(message, is_error=not success)
+        
+        # Log completion
+        self._append_log(f"[{self._get_timestamp()}] {status_icon} {message}")
         
         if success:
             print(f"✓ {message}")
@@ -289,6 +356,27 @@ class ScriptLauncherApp:
             message += f"  {ext}: {status}\n"
 
         messagebox.showwarning("Script Unavailable", message)
+
+    def _append_log(self, message: str):
+        """Append message to the logs textarea."""
+        if self.logs_widget:
+            self.logs_widget.config(state="normal")
+            self.logs_widget.insert("end", message + "\n")
+            self.logs_widget.see("end")  # Auto-scroll to bottom
+            self.logs_widget.config(state="normal")
+            self.root.update_idletasks()
+
+    def _clear_logs(self):
+        """Clear the logs textarea."""
+        if self.logs_widget:
+            self.logs_widget.config(state="normal")
+            self.logs_widget.delete("1.0", "end")
+            self.logs_widget.config(state="normal")
+
+    @staticmethod
+    def _get_timestamp() -> str:
+        """Get current timestamp string."""
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def _update_status(self, message: str, is_error: bool = False):
         """Update the status bar."""

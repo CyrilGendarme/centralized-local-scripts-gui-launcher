@@ -11,6 +11,7 @@ A generic Python GUI application that generates buttons for launching local scri
 - **Cross-platform**: Works on Windows, Linux, and macOS
 - **Threaded Execution**: Scripts run in background threads to keep UI responsive
 - **Status Feedback**: Real-time status updates and error messages
+- **Execution Logs**: Live log output captured during script execution displayed in a textarea
 
 ## Project Structure
 
@@ -201,6 +202,36 @@ Edit `scripts_launcher.spec` to:
 - Show console: Set `console=True`
 - Add data files: Add to `datas=[]` list
 - Include hidden imports: Add to `hiddenimports=[]`
+
+## User Interface Layout
+
+The application features a split-pane design:
+
+### Left Pane: Script Buttons
+- Displays all configured scripts as clickable cards
+- Each card shows:
+  - Script name (in accent color)
+  - Description (in dim color)
+  - File name (in monospace font)
+  - Launch button (green if available, red if unavailable)
+- Scrollable area for many scripts
+- Click any button to execute the script
+
+### Right Pane: Execution Logs
+- Real-time display of script execution logs
+- Shows timestamps for each execution event
+- Displays:
+  - Script launch information
+  - Execution status and results
+  - Error messages (if any)
+- Auto-scrolls to show latest logs
+- **Clear Logs** button to clear all logged output
+
+### Status Bar
+- Located at the bottom of the window
+- Shows current operation status
+- Displays error/success messages
+- Updates in real-time during script execution
 
 ## Creating Example Scripts
 

@@ -64,18 +64,34 @@ Technical overview of the Scripts Launcher application.
   - Creates UI components dynamically
   - Handles user interactions
   - Manages threading for script execution
+  - Manages execution logs display
 
 **Key Methods**:
-- `_build_ui()`: Constructs the user interface
+- `_build_ui()`: Constructs the main user interface (split layout)
+- `_build_header()`: Creates title and description
+- `_build_scripts_area()`: Creates scrollable scripts panel (left)
+- `_build_logs_area()`: Creates execution logs textarea (right)
+- `_build_status_bar()`: Creates status display at bottom
 - `_load_scripts()`: Creates buttons from config
 - `_create_script_button()`: Creates individual script entry
-- `_on_script_launch()`: Handles launch button clicks
+- `_on_script_launch()`: Handles launch button clicks and logs
 - `_on_script_complete()`: Updates UI after execution
+- `_append_log()`: Appends message to logs textarea
+- `_clear_logs()`: Clears all logged output
+- `_get_timestamp()`: Returns formatted timestamp
+
+**UI Layout**:
+- Header: Application title and description
+- Content Area (split):
+  - Left: Scrollable script buttons
+  - Right: Execution logs textarea with clear button
+- Status Bar: Current operation status
 
 **Threading**:
 - Uses `threading.Thread` with daemon flag
 - Keeps UI responsive during script execution
 - Calls GUI updates via `root.after()` to stay thread-safe
+- Logs are appended from worker threads safely
 
 ### 2. **config.py** - Configuration Management
 **Purpose**: Loads, validates, and provides access to configuration.
