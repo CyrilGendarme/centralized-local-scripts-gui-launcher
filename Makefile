@@ -1,4 +1,4 @@
-.PHONY: help install install-dev run build test test-cov lint format clean clean-build clean-pyc docs
+.PHONY: help install install-dev run build build-deploy test test-cov lint format clean clean-build clean-pyc docs
 
 help:
 	@echo "Scripts Launcher - Development Commands"
@@ -11,6 +11,7 @@ help:
 	@echo "  install-dev    Install development dependencies"
 	@echo "  run            Run the application"
 	@echo "  build          Build executable (PyInstaller)"
+	@echo "  build-deploy   Build and deploy executable to Desktop"
 	@echo "  test           Run tests"
 	@echo "  test-cov       Run tests with coverage"
 	@echo "  lint           Run linting checks"
@@ -31,6 +32,9 @@ run:
 
 build:
 	python build.py
+
+build-deploy:
+	python build_and_deploy.py
 
 test:
 	pytest tests/ -v

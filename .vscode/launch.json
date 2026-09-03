@@ -26,9 +26,7 @@
             "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "args": [
-                "${workspaceFolder}/config.json"
-            ],
+            "args": ["${workspaceFolder}/config.json"],
             "cwd": "${workspaceFolder}"
         },
         {
@@ -38,10 +36,7 @@
             "module": "pytest",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "args": [
-                "-v",
-                "tests/"
-            ]
+            "args": ["-v", "tests/"]
         },
         {
             "name": "Python: Module (Debug)",
@@ -50,6 +45,15 @@
             "module": "${command:pickModule}",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Build & Deploy to Desktop",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/build_and_deploy.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

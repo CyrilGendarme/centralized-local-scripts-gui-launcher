@@ -184,6 +184,23 @@ This will:
 pyinstaller scripts_launcher.spec
 ```
 
+### Option 3: Build and Deploy to Desktop
+
+```bash
+python build_and_deploy.py
+```
+
+This will:
+1. Build the executable using PyInstaller
+2. Automatically copy the executable to your Desktop
+3. Create a shortcut you can easily access and run
+
+**Via VS Code**:
+- Open the Debug/Run dropdown menu (Ctrl+Shift+D)
+- Select **"Build & Deploy to Desktop"**
+- Press F5 or click the Run button
+- The executable will be built and placed on your Desktop
+
 ### Output Structure
 
 ```
