@@ -1,0 +1,28 @@
+{
+    "app_title": "Local Scripts Launcher",
+    "app_icon": null,
+    "window_width": 1000,
+    "window_height": 600,
+    "scripts": [
+        {
+            "link_name": "DJ Setup (Minilab + DJControl)",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\travel-dj-setup-launch-script\\travel_setup_launch_all.bat",
+            "description": "DJ Setup (Minilab + DJControl)"
+        },
+        {
+            "link_name": "DJ Setup (Minilab only)",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\travel-dj-setup-launch-script\\travel_setup_launch_minilab.bat",
+            "description": "DJ Setup (Minilab only)"
+        },
+        {
+            "link_name": "OBS Radio",
+            "local_path": "C:\\Users\\User\\Desktop\\musique\\online\\dj gratuit\\ovh\\musicbee_radio\\launch_all.ps1",
+            "description": "OBS Radio script"
+        },
+        {
+            "link_name": "OBS DJ Set",
+            "local_path": "C:\\Users\\User\\Desktop\\musique\\online\\dj gratuit\\ovh\\ssh_websocket_middleware\\launch_all.ps1",
+            "description": "Example executable"
+        }
+    ]
+}

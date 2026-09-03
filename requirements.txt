@@ -1,0 +1,10 @@
+# Core requirements for Scripts Launcher
+
+# GUI (built-in with Python)
+# tkinter (included with Python)
+
+# Building executable
+pyinstaller>=6.0.0
+
+# Optional: for enhanced development
+pytest>=7.0.0  # For testing
