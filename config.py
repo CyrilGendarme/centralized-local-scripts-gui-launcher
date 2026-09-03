@@ -2,6 +2,7 @@
 Configuration loader module - handles loading and parsing config.json files.
 """
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -14,15 +15,63 @@ class Config:
         Initialize config loader.
         
         Args:
-            config_path: Path to config.json. If None, looks for config.json in current directory.
+            config_path: Path to config.json. If None, searches in multiple locations:
+                         - Same directory as the script/executable
+                         - User's home directory
+                         - Current working directory
         """
         if config_path is None:
-            config_path = Path.cwd() / "config.json"
+            config_path = self._find_config()
         
         self.config_path = Path(config_path).resolve()
         self.data: Dict[str, Any] = {}
         self.scripts: List[Dict[str, Any]] = []
         self._load()
+
+    @staticmethod
+    def _find_config() -> Path:
+        """
+        Find config.json in multiple locations using absolute paths.
+        
+        Search order:
+        1. Same directory as the running script/executable
+        2. User's home directory
+        3. Current working directory
+        
+        Returns:
+            Path to config.json
+            
+        Raises:
+            FileNotFoundError: If config.json not found in any location
+        """
+        search_paths = []
+        
+        # 1. Same directory as the script/executable
+        if getattr(sys, 'frozen', False):
+            # Running as executable (PyInstaller)
+            script_dir = Path(sys.executable).parent
+        else:
+            # Running as Python script
+            script_dir = Path(sys.argv[0]).parent.resolve()
+        
+        search_paths.append(script_dir / "config.json")
+        
+        # 2. User's home directory
+        search_paths.append(Path.home() / "config.json")
+        
+        # 3. Current working directory
+        search_paths.append(Path.cwd() / "config.json")
+        
+        # Search for config.json
+        for config_path in search_paths:
+            if config_path.exists():
+                return config_path
+        
+        # If not found, raise error with all searched locations
+        locations = "\n  ".join(str(p) for p in search_paths)
+        raise FileNotFoundError(
+            f"Config file not found. Searched in:\n  {locations}"
+        )
 
     def _load(self):
         """Load configuration from JSON file."""

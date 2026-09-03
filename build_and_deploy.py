@@ -31,7 +31,7 @@ def build_executable():
 
 
 def copy_to_desktop():
-    """Copy the built executable to the desktop."""
+    """Copy the built executable and config.json to the desktop."""
     desktop = get_desktop_path()
     
     if not desktop.exists():
@@ -52,9 +52,22 @@ def copy_to_desktop():
         print(f"Copying executable to desktop...")
         shutil.copy2(dist_path, desktop_exe)
         print(f"✓ Executable copied to: {desktop_exe}")
+        
+        # Also copy config.json to desktop so executable can find it
+        config_src = Path(__file__).parent / "config.json"
+        config_dst = desktop / "config.json"
+        
+        if config_src.exists():
+            print(f"Copying config.json to desktop...")
+            shutil.copy2(config_src, config_dst)
+            print(f"✓ Config copied to: {config_dst}")
+        else:
+            print(f"⚠ Config file not found at {config_src}")
+            print(f"  You may need to manually copy config.json to the desktop")
+        
         return True
     except Exception as e:
-        print(f"✗ Failed to copy executable: {e}")
+        print(f"✗ Failed to copy files: {e}")
         return False
 
 

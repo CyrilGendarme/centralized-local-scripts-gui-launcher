@@ -113,6 +113,23 @@ python main.py
 | `local_path` | string | Yes | Relative path to script file |
 | `description` | string | No | Description shown below button |
 
+### Finding config.json
+
+When the application starts, it searches for `config.json` in the following order:
+
+1. **Same directory as the executable/script**
+   - When running the compiled executable from Desktop, config.json should be there
+   - This is the primary location after deployment
+
+2. **User's home directory**
+   - `C:\Users\<YourUsername>\config.json` (Windows)
+   - `~/.config.json` (Linux/macOS)
+
+3. **Current working directory**
+   - Wherever you run the application from
+
+**Deployment Tip**: After building with `make build-deploy`, copy `config.json` to your Desktop alongside `ScriptsLauncher.exe`.
+
 ## Script Execution
 
 The application automatically determines how to execute scripts based on file type and system environment:
@@ -192,14 +209,17 @@ python build_and_deploy.py
 
 This will:
 1. Build the executable using PyInstaller
-2. Automatically copy the executable to your Desktop
-3. Create a shortcut you can easily access and run
+2. Automatically copy the executable **and config.json** to your Desktop
+3. Create a complete deployment you can easily access and run
 
 **Via VS Code**:
 - Open the Debug/Run dropdown menu (Ctrl+Shift+D)
 - Select **"Build & Deploy to Desktop"**
 - Press F5 or click the Run button
-- The executable will be built and placed on your Desktop
+- Both executable and config.json will be placed on your Desktop
+- Run `ScriptsLauncher.exe` to start the application
+
+**Result**: You get both files on Desktop, ready to run without additional setup.
 
 ### Output Structure
 
