@@ -127,6 +127,32 @@ class TestScriptRunner:
         assert supported[".py"] is True  # Python always supported
         assert ".ps1" in supported
         assert ".sh" in supported
+        assert ".bat" in supported
+        assert ".cmd" in supported
+
+    def test_can_run_batch_script_windows_only(self, tmp_path):
+        """Test that batch scripts are only runnable on Windows."""
+        runner = ScriptRunner()
+        script_file = tmp_path / "test.bat"
+        script_file.write_text("@echo off")
+        
+        # Batch files only run on Windows
+        if runner.is_windows:
+            assert runner.can_run(script_file)
+        else:
+            assert not runner.can_run(script_file)
+
+    def test_can_run_cmd_script_windows_only(self, tmp_path):
+        """Test that .cmd scripts are only runnable on Windows."""
+        runner = ScriptRunner()
+        script_file = tmp_path / "test.cmd"
+        script_file.write_text("@echo off")
+        
+        # CMD files only run on Windows
+        if runner.is_windows:
+            assert runner.can_run(script_file)
+        else:
+            assert not runner.can_run(script_file)
 
     @patch('subprocess.Popen')
     def test_run_python_script(self, mock_popen, tmp_path):

@@ -45,6 +45,8 @@ class ScriptRunner:
 
         if suffix == ".ps1":
             return self.has_powershell or self.has_pwsh
+        elif suffix == ".bat" or suffix == ".cmd":
+            return self.is_windows
         elif suffix == ".sh":
             return self.has_bash or self.has_sh or (
                 self.is_windows and self.has_git_bash
@@ -79,6 +81,8 @@ class ScriptRunner:
             
             if suffix == ".ps1":
                 return self._run_powershell(script_path)
+            elif suffix == ".bat" or suffix == ".cmd":
+                return self._run_batch(script_path)
             elif suffix == ".sh":
                 return self._run_shell(script_path)
             elif suffix == ".py":
@@ -114,6 +118,20 @@ class ScriptRunner:
 
         except Exception as e:
             return False, f"Failed to run PowerShell script: {str(e)}"
+
+    def _run_batch(self, script_path: Path) -> Tuple[bool, str]:
+        """Run Windows batch script (.bat or .cmd)."""
+        try:
+            if not self.is_windows:
+                return False, "Batch scripts only supported on Windows"
+
+            # Use cmd.exe to run batch files
+            cmd = ["cmd.exe", "/c", str(script_path)]
+            subprocess.Popen(cmd, start_new_session=not self.is_windows)
+            return True, f"Batch script launched: {script_path.name}"
+
+        except Exception as e:
+            return False, f"Failed to run batch script: {str(e)}"
 
     def _run_shell(self, script_path: Path) -> Tuple[bool, str]:
         """Run shell script (.sh)."""
@@ -171,6 +189,8 @@ class ScriptRunner:
         """Get supported file extensions and their availability."""
         return {
             ".ps1": self.has_powershell or self.has_pwsh,
+            ".bat": self.is_windows,
+            ".cmd": self.is_windows,
             ".sh": self.has_bash or self.has_sh or self.has_git_bash,
             ".py": True,
             ".exe": self.is_windows,

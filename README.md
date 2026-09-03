@@ -4,7 +4,7 @@ A generic Python GUI application that generates buttons for launching local scri
 
 ## Features
 
-- **Multi-format Support**: Launch PowerShell (.ps1), Bash (.sh), Python (.py), and executable files (.exe)
+- **Multi-format Support**: Launch PowerShell (.ps1), Batch (.bat/.cmd), Bash (.sh), Python (.py), and executable files (.exe)
 - **Environment-aware Execution**: Automatically detects available interpreters and selects the best method to run scripts
 - **Configuration-driven**: Simple JSON config file to define buttons and script paths
 - **Dark Theme**: Professional dark UI with purple and teal accents using tkinter
@@ -28,6 +28,7 @@ A generic Python GUI application that generates buttons for launching local scri
 │   └── launch.json              # VS Code debug configurations
 ├── scripts/                     # Example scripts directory
 │   ├── example.ps1
+│   ├── example.bat
 │   ├── example.sh
 │   └── example.py
 └── README.md                    # This file
@@ -120,6 +121,11 @@ The application automatically determines how to execute scripts based on file ty
 - Falls back to `powershell.exe` on Windows
 - Automatically bypasses execution policy
 
+### Batch Scripts (.bat and .cmd)
+- **Windows**: Uses `cmd.exe /c` to execute
+- **Other Systems**: Not supported (button disabled)
+- No additional dependencies required on Windows
+
 ### Shell Scripts (.sh)
 - **Windows**: Uses Git Bash or WSL bash
 - **Linux/macOS**: Uses system bash or sh
@@ -205,6 +211,16 @@ Edit `scripts_launcher.spec` to:
 Write-Host "Hello from PowerShell!" -ForegroundColor Green
 Get-Date
 Read-Host "Press Enter to exit"
+```
+
+### Batch Example (.bat)
+
+```batch
+@echo off
+REM scripts/example.bat
+echo Hello from Batch!
+echo %date% %time%
+pause
 ```
 
 ### Bash Example (.sh)

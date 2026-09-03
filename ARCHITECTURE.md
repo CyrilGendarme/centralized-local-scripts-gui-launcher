@@ -135,6 +135,9 @@ PowerShell (.ps1)
 ├── pwsh (PowerShell Core - preferred)
 └── powershell.exe (Windows PowerShell - fallback)
 
+Batch Scripts (.bat / .cmd)
+└── cmd.exe /c (Windows only)
+
 Shell Scripts (.sh)
 ├── Windows: Git Bash → WSL bash
 ├── Unix: bash → sh

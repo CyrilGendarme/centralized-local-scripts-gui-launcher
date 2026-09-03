@@ -80,6 +80,11 @@ That's it! Your GUI launcher is ready.
       "description": "Deploys to production server"
     },
     {
+      "link_name": "Run Batch Job",
+      "local_path": "./scripts/backup.bat",
+      "description": "Backs up database (Windows only)"
+    },
+    {
       "link_name": "Run Tests",
       "local_path": "./scripts/test.sh",
       "description": "Runs the full test suite"
