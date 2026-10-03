@@ -23,6 +23,11 @@
             "link_name": "OBS DJ Set",
             "local_path": "C:\\Users\\User\\Desktop\\musique\\online\\dj gratuit\\ovh\\ssh_websocket_middleware\\launch_all.ps1",
             "description": "Example executable"
+        },
+        {
+            "link_name": "Mosh-Pro Dynamic Effects",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\launch_moshpro_effects.bat",
+            "description": "Mosh-Pro + audio analysis effects + Spout/OBS glue GUI"
         }
     ]
 }
