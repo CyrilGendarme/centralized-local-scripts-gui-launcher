@@ -14,7 +14,10 @@ if not exist "%MOSHPRO%" (
 )
 
 start "" /D "C:\Program Files\Mosh-Pro" "%MOSHPRO%"
-timeout /t 5 >nul
+
+REM --- Modal: wait for the user to do the manual action in Mosh-Pro ---
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0moshpro_continue_modal.ps1" -Message "foo"
+
 
 start "Audio analysis -> Mosh-Pro effects" /D "%EFFECTS_DIR%" "%PYTHON%" "%EFFECTS_DIR%\main.py"
 timeout /t 2 >nul
