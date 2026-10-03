@@ -16,6 +16,7 @@ class Config:
         
         Args:
             config_path: Path to config.json. If None, searches in multiple locations:
+                         - PROJECT_CONFIG_PATH environment variable (if set)
                          - Same directory as the script/executable
                          - User's home directory
                          - Current working directory
@@ -33,10 +34,17 @@ class Config:
         """
         Find config.json in multiple locations using absolute paths.
         
-        Search order:
-        1. Same directory as the running script/executable
+        Search order (when running as exe):
+        1. Same directory as the executable (bundled config.json)
+        2. Current working directory
+        3. User's home directory
+        4. Desktop
+        
+        Search order (when running as script):
+        1. Current working directory (project directory)
         2. User's home directory
-        3. Current working directory
+        3. Desktop
+        4. Same directory as the script
         
         Returns:
             Path to config.json
@@ -45,22 +53,33 @@ class Config:
             FileNotFoundError: If config.json not found in any location
         """
         search_paths = []
+        is_frozen = getattr(sys, 'frozen', False)
         
-        # 1. Same directory as the script/executable
-        if getattr(sys, 'frozen', False):
+        # Determine script directory
+        if is_frozen:
             # Running as executable (PyInstaller)
             script_dir = Path(sys.executable).parent
         else:
             # Running as Python script
             script_dir = Path(sys.argv[0]).parent.resolve()
         
-        search_paths.append(script_dir / "config.json")
+        # When running as exe, prioritize bundled config
+        if is_frozen:
+            search_paths.append(script_dir / "config.json")
         
-        # 2. User's home directory
+        # Current working directory
+        search_paths.append(Path.cwd() / "config.json")
+        
+        # User's home directory
         search_paths.append(Path.home() / "config.json")
         
-        # 3. Current working directory
-        search_paths.append(Path.cwd() / "config.json")
+        # Desktop
+        desktop = Path.home() / "Desktop"
+        search_paths.append(desktop / "config.json")
+        
+        # Script directory (for non-frozen, or as fallback)
+        if not is_frozen:
+            search_paths.append(script_dir / "config.json")
         
         # Search for config.json
         for config_path in search_paths:

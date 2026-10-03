@@ -115,20 +115,29 @@ python main.py
 
 ### Finding config.json
 
-When the application starts, it searches for `config.json` in the following order:
+When the application starts, it searches for `config.json` in the following order using absolute paths:
 
-1. **Same directory as the executable/script**
-   - When running the compiled executable from Desktop, config.json should be there
-   - This is the primary location after deployment
+1. **`.config_root` marker file** (highest priority)
+   - Embedded in the executable bundle
+   - Contains the absolute path to the project's config.json
+   - Set by the build script to point to the original project source
+   - This is the primary location when using the Desktop deployment
 
-2. **User's home directory**
+2. **Same directory as the executable/script**
+   - When running the compiled executable directly
+   - Useful for standalone deployments
+
+3. **User's home directory**
    - `C:\Users\<YourUsername>\config.json` (Windows)
    - `~/.config.json` (Linux/macOS)
 
-3. **Current working directory**
+4. **Current working directory**
    - Wherever you run the application from
 
-**Deployment Tip**: After building with `make build-deploy`, copy `config.json` to your Desktop alongside `ScriptsLauncher.exe`.
+**Deployment**: After building with `make build-deploy`:
+- `ScriptsLauncher.bat` wrapper is created on Desktop
+- This batch file sets `PROJECT_CONFIG_PATH` to the project's config.json
+- Double-click `ScriptsLauncher.bat` to launch - no additional setup needed!
 
 ## Script Execution
 
@@ -209,17 +218,23 @@ python build_and_deploy.py
 
 This will:
 1. Build the executable using PyInstaller
-2. Automatically copy the executable **and config.json** to your Desktop
-3. Create a complete deployment you can easily access and run
+2. Store the absolute path to project's config.json in the executable bundle
+3. Copy `ScriptsLauncher.exe` to your Desktop
 
 **Via VS Code**:
 - Open the Debug/Run dropdown menu (Ctrl+Shift+D)
 - Select **"Build & Deploy to Desktop"**
 - Press F5 or click the Run button
-- Both executable and config.json will be placed on your Desktop
-- Run `ScriptsLauncher.exe` to start the application
 
-**Result**: You get both files on Desktop, ready to run without additional setup.
+**On Desktop, you'll find**:
+- `ScriptsLauncher.exe` - The compiled executable
+
+**How it works**:
+- The executable contains a marker file (`.config_root`) with the absolute path to the project's config.json
+- When you run the exe from Desktop, it automatically finds and loads the config from the project source
+- No manual setup needed - just double-click and run!
+
+### Output Structure
 
 ### Output Structure
 

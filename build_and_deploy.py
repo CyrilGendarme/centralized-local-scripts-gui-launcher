@@ -31,7 +31,7 @@ def build_executable():
 
 
 def copy_to_desktop():
-    """Copy the built executable and config.json to the desktop."""
+    """Copy the built executable to desktop."""
     desktop = get_desktop_path()
     
     if not desktop.exists():
@@ -40,34 +40,39 @@ def copy_to_desktop():
     
     # Source executable
     dist_path = Path(__file__).parent / "dist" / "ScriptsLauncher" / "ScriptsLauncher.exe"
+    dist_dir = dist_path.parent
     
     if not dist_path.exists():
         print(f"✗ Executable not found: {dist_path}")
         return False
     
+    # Clean up any leftover marker files in dist folder
+    config_root_file = dist_dir / ".config_root"
+    if config_root_file.exists():
+        config_root_file.unlink()
+        print(f"✓ Cleaned up marker file")
+    
     # Destination on desktop
     desktop_exe = desktop / "ScriptsLauncher.exe"
     
     try:
+        # Copy executable to desktop
         print(f"Copying executable to desktop...")
         shutil.copy2(dist_path, desktop_exe)
         print(f"✓ Executable copied to: {desktop_exe}")
         
-        # Also copy config.json to desktop so executable can find it
-        config_src = Path(__file__).parent / "config.json"
-        config_dst = desktop / "config.json"
+        # Clean up any leftover marker files on desktop
+        desktop_marker = desktop / ".config_root"
+        if desktop_marker.exists():
+            desktop_marker.unlink()
+            print(f"✓ Cleaned up leftover marker file from desktop")
         
-        if config_src.exists():
-            print(f"Copying config.json to desktop...")
-            shutil.copy2(config_src, config_dst)
-            print(f"✓ Config copied to: {config_dst}")
-        else:
-            print(f"⚠ Config file not found at {config_src}")
-            print(f"  You may need to manually copy config.json to the desktop")
+        print(f"\n✓ ScriptsLauncher.exe created on desktop")
+        print(f"  Run from the project directory to auto-detect config.json")
         
         return True
     except Exception as e:
-        print(f"✗ Failed to copy files: {e}")
+        print(f"✗ Failed to deploy: {e}")
         return False
 
 
@@ -96,7 +101,8 @@ def main():
     print()
     print("=" * 60)
     print("✓ Build and deployment successful!")
-    print("✓ Executable is now on your desktop")
+    print("✓ ScriptsLauncher.exe created on your Desktop")
+    print("✓ Double-click ScriptsLauncher.exe to launch the app")
     print("=" * 60)
     sys.exit(0)
 
