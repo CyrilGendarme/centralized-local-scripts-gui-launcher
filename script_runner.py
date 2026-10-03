@@ -113,7 +113,7 @@ class ScriptRunner:
                 str(script_path),
             ]
             
-            subprocess.Popen(cmd, start_new_session=not self.is_windows)
+            subprocess.Popen(cmd, cwd=str(script_path.parent), start_new_session=not self.is_windows)
             return True, f"PowerShell script launched: {script_path.name}"
 
         except Exception as e:
@@ -127,7 +127,7 @@ class ScriptRunner:
 
             # Use cmd.exe to run batch files
             cmd = ["cmd.exe", "/c", str(script_path)]
-            subprocess.Popen(cmd, start_new_session=not self.is_windows)
+            subprocess.Popen(cmd, cwd=str(script_path.parent), start_new_session=not self.is_windows)
             return True, f"Batch script launched: {script_path.name}"
 
         except Exception as e:
@@ -156,7 +156,7 @@ class ScriptRunner:
                 
                 cmd = [bash_exe, str(script_path)]
 
-            subprocess.Popen(cmd, start_new_session=not self.is_windows)
+            subprocess.Popen(cmd, cwd=str(script_path.parent), start_new_session=not self.is_windows)
             return True, f"Shell script launched: {script_path.name}"
 
         except Exception as e:
@@ -166,7 +166,7 @@ class ScriptRunner:
         """Run Python script."""
         try:
             cmd = [self.python_executable, str(script_path)]
-            subprocess.Popen(cmd, start_new_session=not self.is_windows)
+            subprocess.Popen(cmd, cwd=str(script_path.parent), start_new_session=not self.is_windows)
             return True, f"Python script launched: {script_path.name}"
 
         except Exception as e:
@@ -179,7 +179,7 @@ class ScriptRunner:
                 return False, "Non-.exe executables require Unix permissions"
 
             cmd = [str(script_path)]
-            subprocess.Popen(cmd, start_new_session=not self.is_windows)
+            subprocess.Popen(cmd, cwd=str(script_path.parent), start_new_session=not self.is_windows)
             return True, f"Executable launched: {script_path.name}"
 
         except Exception as e:
