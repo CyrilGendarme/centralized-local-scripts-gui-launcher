@@ -20,9 +20,24 @@
             "description": "OBS Radio script"
         },
         {
-            "link_name": "OBS DJ Set",
+            "link_name": "OBS DJ Set (Full)",
             "local_path": "C:\\Users\\User\\Desktop\\musique\\online\\dj gratuit\\ovh\\ssh_websocket_middleware\\launch_all.ps1",
             "description": "Example executable"
+        },
+        {
+            "link_name": "OBS DJ Set With Vynils",
+            "local_path": "C:\\Users\\User\\Desktop\\musique\\online\\dj gratuit\\ovh\\ssh_websocket_middleware\\launch_all_2.ps1",
+            "description": "Example executable"
+        },
+        {
+            "link_name": "OBS DJ Set (Partial)",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\launch_rekordbox_databridge_basic.ps1",
+            "description": "Rekordbox + DataBridge basic GUI (no OBS, no SSH middleware)"
+        },
+        {
+            "link_name": "OBS DJ Set With Vynils (Partial)",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\launch_rekordbox_databridge_with_vinyls.ps1",
+            "description": "Rekordbox + DataBridge with track picker/launcher GUI (no OBS, no SSH middleware)"
         },
         {
             "link_name": "Mosh-Pro Dynamic Effects",
