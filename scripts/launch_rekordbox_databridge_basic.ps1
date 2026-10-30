@@ -155,8 +155,8 @@ try {
         Write-Host "Started PowerShell process with PID $($process.Id)"
     }
 
-    # Launch the DataBridge script with basic GUI
-    Start-PythonScript -ScriptPath $DataBridgeMainPath -LaunchScenario "GUI"
+    # Launch the DataBridge script with basic GUI + UDP broadcast to remote listeners
+    Start-PythonScript -ScriptPath $DataBridgeMainPath -LaunchScenario "UDP_AND_GUI"
 
     Write-Host "All scripts launched. Press Ctrl+C to gracefully shutdown..."
 
