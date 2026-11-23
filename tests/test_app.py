@@ -93,6 +93,41 @@ class TestConfig:
         assert "Test Script" in paths
         assert paths["Test Script"].name == "test.ps1"
 
+    def test_config_get_tabs(self, tmp_path):
+        """Test grouping scripts by tab, in order of first appearance."""
+        config_data = {
+            "scripts": [
+                {"link_name": "A", "local_path": "./a.ps1", "tab": "Music"},
+                {"link_name": "B", "local_path": "./b.ps1"},
+                {"link_name": "C", "local_path": "./c.ps1", "tab": "Music"}
+            ]
+        }
+
+        config_file = tmp_path / "config.json"
+        with open(config_file, "w") as f:
+            json.dump(config_data, f)
+
+        tabs = Config(config_file).get_tabs()
+
+        assert list(tabs) == ["Music", "General"]
+        assert [s["link_name"] for s in tabs["Music"]] == ["A", "C"]
+        assert [s["link_name"] for s in tabs["General"]] == ["B"]
+
+    def test_config_invalid_tab(self, tmp_path):
+        """Test config with a non-string tab field."""
+        config_data = {
+            "scripts": [
+                {"link_name": "A", "local_path": "./a.ps1", "tab": 3}
+            ]
+        }
+
+        config_file = tmp_path / "config.json"
+        with open(config_file, "w") as f:
+            json.dump(config_data, f)
+
+        with pytest.raises(ValueError):
+            Config(config_file)
+
 
 class TestScriptRunner:
     """Tests for ScriptRunner class."""

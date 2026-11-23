@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+DEFAULT_TAB = "General"
+
 
 class Config:
     """Handles loading and parsing configuration files."""
@@ -119,6 +121,9 @@ class Config:
                     f"Script {i} missing required fields (local_path, link_name)"
                 )
 
+            if "tab" in script and not isinstance(script["tab"], str):
+                raise ValueError(f"Script {i} has a non-string 'tab' field")
+
     @property
     def app_title(self) -> str:
         """Get application title."""
@@ -145,6 +150,21 @@ class Config:
     def get_scripts(self) -> List[Dict[str, Any]]:
         """Get all configured scripts."""
         return self.scripts.copy()
+
+    def get_tabs(self) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Group scripts by their "tab" field, in order of first appearance.
+
+        Scripts without a "tab" field go to the DEFAULT_TAB tab.
+
+        Returns:
+            Dictionary of {tab_name: [scripts]}
+        """
+        tabs: Dict[str, List[Dict[str, Any]]] = {}
+        for script in self.scripts:
+            tab_name = script.get("tab") or DEFAULT_TAB
+            tabs.setdefault(tab_name, []).append(script)
+        return tabs
 
     def get_script_paths(self, relative_to: Optional[Path] = None) -> Dict[str, Path]:
         """

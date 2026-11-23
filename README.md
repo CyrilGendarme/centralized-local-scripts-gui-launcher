@@ -67,11 +67,13 @@ Edit `config.json` to add your scripts:
   "window_height": 600,
   "scripts": [
     {
+      "tab": "Maintenance",
       "link_name": "Backup Database",
       "local_path": "./scripts/backup.ps1",
       "description": "Backs up the database to external storage"
     },
     {
+      "tab": "Deployment",
       "link_name": "Deploy App",
       "local_path": "./scripts/deploy.sh",
       "description": "Deploys application to production"
@@ -112,6 +114,7 @@ python main.py
 | `link_name` | string | Yes | Label shown on the button |
 | `local_path` | string | Yes | Relative path to script file |
 | `description` | string | No | Description shown below button |
+| `tab` | string | No | Tab the script is shown in (default: "General"). Tabs appear in order of first use |
 
 ### Finding config.json
 

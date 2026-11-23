@@ -10,7 +10,7 @@ from tkinter import messagebox, ttk
 from typing import Callable, Dict, Optional
 
 import theme
-from config import Config
+from config import DEFAULT_TAB, Config
 from script_runner import ScriptRunner
 
 
@@ -104,19 +104,43 @@ class ScriptLauncherApp:
         desc_label.pack(anchor="w")
 
     def _build_scripts_area(self, parent: ttk.Frame):
-        """Build the scrollable scripts area on the left."""
-        # Container for scripts
-        scripts_container = ttk.Frame(parent)
-        scripts_container.pack(side="left", fill="both", expand=True, padx=20, pady=10)
+        """Build the tabbed scripts area on the left (one scrollable list per tab)."""
+        # Notebook holding one tab per theme
+        self.notebook = ttk.Notebook(parent)
+        self.notebook.pack(side="left", fill="both", expand=True, padx=20, pady=10)
+
+        # Canvas of each tab, keyed by tab frame widget name
+        self.tab_canvases: Dict[str, tk.Canvas] = {}
+
+        # Mouse wheel scrolls the canvas of the selected tab
+        def _on_mousewheel(event):
+            canvas = self.tab_canvases.get(self.notebook.select())
+            if canvas:
+                canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        self.root.bind_all("<MouseWheel>", _on_mousewheel)
+
+    def _create_scrollable_tab(self, tab_name: str) -> ttk.Frame:
+        """
+        Add a tab with a scrollable area to the notebook.
+
+        Args:
+            tab_name: Label shown on the tab
+
+        Returns:
+            The frame to pack script buttons into
+        """
+        tab_frame = ttk.Frame(self.notebook)
+        self.notebook.add(tab_frame, text=tab_name)
 
         # Canvas with scrollbar for scrolling
         canvas = tk.Canvas(
-            scripts_container,
+            tab_frame,
             bg=theme.BG,
             highlightthickness=0,
             relief="flat"
         )
-        scrollbar = ttk.Scrollbar(scripts_container, orient="vertical", command=canvas.yview)
+        scrollbar = ttk.Scrollbar(tab_frame, orient="vertical", command=canvas.yview)
         scrollable_frame = ttk.Frame(canvas)
 
         scrollable_frame.bind(
@@ -124,19 +148,20 @@ class ScriptLauncherApp:
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        window_id = canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         canvas.configure(yscrollcommand=scrollbar.set)
 
-        # Mouse wheel scrolling
-        def _on_mousewheel(event):
-            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        # Keep the cards as wide as the visible area so Launch buttons stay on screen
+        canvas.bind(
+            "<Configure>",
+            lambda e: canvas.itemconfigure(window_id, width=e.width)
+        )
 
-        canvas.bind_all("<MouseWheel>", _on_mousewheel)
-
-        canvas.pack(side="left", fill="both", expand=True)
+        canvas.pack(side="left", fill="both", expand=True, pady=(10, 0))
         scrollbar.pack(side="right", fill="y")
 
-        self.scripts_frame = scrollable_frame
+        self.tab_canvases[str(tab_frame)] = canvas
+        return scrollable_frame
 
     def _build_logs_area(self, parent: ttk.Frame):
         """Build the logs/output textarea on the right."""
@@ -199,36 +224,41 @@ class ScriptLauncherApp:
 
     def _load_scripts(self):
         """Load scripts from configuration and create buttons."""
-        scripts = self.config.get_scripts()
+        tabs = self.config.get_tabs()
         script_paths = self.config.get_script_paths()
 
-        if not scripts:
+        if not tabs:
             no_scripts_label = ttk.Label(
-                self.scripts_frame,
+                self._create_scrollable_tab(DEFAULT_TAB),
                 text="No scripts configured",
                 style="Dim.TLabel"
             )
             no_scripts_label.pack(pady=20)
             return
 
-        for i, script in enumerate(scripts):
-            link_name = script["link_name"]
-            script_path = script_paths[link_name]
-            description = script.get("description", "No description")
+        for tab_name, scripts in tabs.items():
+            tab_frame = self._create_scrollable_tab(tab_name)
 
-            # Check if script can run
-            can_run = self.runner.can_run(script_path)
+            for i, script in enumerate(scripts):
+                link_name = script["link_name"]
+                script_path = script_paths[link_name]
+                description = script.get("description", "No description")
 
-            self._create_script_button(
-                link_name,
-                script_path,
-                description,
-                can_run,
-                i == 0  # Is first item
-            )
+                # Check if script can run
+                can_run = self.runner.can_run(script_path)
+
+                self._create_script_button(
+                    tab_frame,
+                    link_name,
+                    script_path,
+                    description,
+                    can_run,
+                    i == 0  # Is first item
+                )
 
     def _create_script_button(
         self,
+        parent: ttk.Frame,
         link_name: str,
         script_path: Path,
         description: str,
@@ -239,6 +269,7 @@ class ScriptLauncherApp:
         Create a script button.
         
         Args:
+            parent: Tab frame the button is added to
             link_name: Name/label for the button
             script_path: Path to the script
             description: Description of what the script does
@@ -246,7 +277,7 @@ class ScriptLauncherApp:
             is_first: Whether this is the first button
         """
         # Container for button and info
-        button_frame = ttk.Frame(self.scripts_frame, style="Card.TFrame")
+        button_frame = ttk.Frame(parent, style="Card.TFrame")
         button_frame.pack(
             fill="x",
             pady=(0 if is_first else 8, 0),
@@ -283,7 +314,8 @@ class ScriptLauncherApp:
 
         # Right side - button
         right_frame = ttk.Frame(button_frame, style="Card.TFrame")
-        right_frame.pack(side="right", padx=12, pady=12)
+        # Packed before the text so long descriptions get clipped instead of the button
+        right_frame.pack(side="right", padx=12, pady=12, before=left_frame)
 
         if can_run:
             btn_style = "Accent.TButton"
