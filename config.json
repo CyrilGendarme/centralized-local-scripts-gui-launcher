@@ -51,6 +51,48 @@
             "link_name": "Mosh-Pro Dynamic Effects",
             "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\launch_moshpro_effects.bat",
             "description": "Mosh-Pro + audio analysis effects + Spout/OBS glue GUI"
+        },
+        {
+            "tab": "VPS Radio",
+            "link_name": "Open Settings Page",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\vps_radio\\vps_radio_open_config.ps1",
+            "description": "Open the radio control webapp (/config/) in the browser"
+        },
+        {
+            "tab": "VPS Radio",
+            "link_name": "Open Show Page",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\vps_radio\\vps_radio_open_show.ps1",
+            "description": "Open the show / Restream controls page (/show/) in the browser"
+        },
+        {
+            "tab": "VPS Radio",
+            "link_name": "Radio Status",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\vps_radio\\vps_radio_status.ps1",
+            "description": "SSH: radiofull.sh status (MediaMTX, radio, switcher)"
+        },
+        {
+            "tab": "VPS Radio",
+            "link_name": "Start Radio",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\vps_radio\\vps_radio_start.ps1",
+            "description": "SSH: radiofull.sh start (asks the sudo password for WireGuard)"
+        },
+        {
+            "tab": "VPS Radio",
+            "link_name": "Stop Radio",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\vps_radio\\vps_radio_stop.ps1",
+            "description": "SSH: radiofull.sh stop"
+        },
+        {
+            "tab": "VPS Radio",
+            "link_name": "Restart Radio",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\vps_radio\\vps_radio_restart.ps1",
+            "description": "SSH: radiofull.sh restart"
+        },
+        {
+            "tab": "VPS Radio",
+            "link_name": "Follow Logs",
+            "local_path": "C:\\Users\\User\\Desktop\\ProjetsIT\\centralized-local-scripts-gui-launcher\\scripts\\vps_radio\\vps_radio_logs.ps1",
+            "description": "SSH: tail -f a component log (radio, switcher or mediamtx)"
         }
     ]
 }
